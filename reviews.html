@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reviews &amp; Ratings · Fusion Grill</title>
+<style>
+:root{
+  --bg:#0c0c0e;--surface:#17171b;--surface-2:#1f1f24;--border:#27272e;--border-soft:#1e1e23;
+  --gold:#e6a93c;--gold-bright:#f3bd55;--gold-dark:#c9922e;
+  --text:#f4f1ea;--dim:#9a958c;--mute:#6f6a62;
+  --green:#5bbd72;--green-bg:rgba(91,189,114,.14);
+  --orange:#e8772e;--orange-bg:rgba(232,119,46,.15);
+  --red:#e0524a;--red-bg:rgba(224,82,74,.12);
+  --rail-w:74px;
+  --font:'Segoe UI',Candara,'Helvetica Neue',system-ui,-apple-system,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+.wrap{display:flex;min-height:100vh}
+
+/* Rail */
+.rail{width:var(--rail-w);background:var(--bg);border-right:1px solid var(--border-soft);display:flex;flex-direction:column;align-items:center;padding:18px 0;position:sticky;top:0;height:100vh;gap:6px;flex-shrink:0}
+.rail a{display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--mute);width:56px;padding:9px 0;border-radius:12px;font-size:10px;transition:.18s}
+.rail a svg{width:21px;height:21px}
+.rail a:hover{color:var(--text);background:var(--surface)}
+.rail a.active{color:var(--gold);background:rgba(230,169,60,.12)}
+.rail .spacer{flex:1}
+
+/* Topbar */
+.topbar{display:flex;align-items:center;gap:24px;padding:16px 30px;border-bottom:1px solid var(--border-soft);background:var(--bg);position:sticky;top:0;z-index:30}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:42px;height:42px;border-radius:11px;background:linear-gradient(150deg,var(--gold-bright),var(--gold-dark));display:grid;place-items:center;flex-shrink:0}
+.logo svg{width:24px;height:24px}
+.brand .name{font-size:16px;font-weight:700;line-height:1.15}
+.brand .name span{display:block;font-weight:600;color:var(--dim);font-size:13px}
+.topnav{display:flex;gap:26px;margin:0 auto}
+.topnav a{color:var(--dim);font-size:15px;padding:6px 0;position:relative;transition:.15s}
+.topnav a:hover{color:var(--text)}
+.topnav a.active{color:var(--gold)}
+.topnav a.active::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:2px;background:var(--gold);border-radius:2px}
+.topright{display:flex;align-items:center;gap:14px}
+.bell{position:relative;color:var(--dim);cursor:pointer}
+.bell svg{width:22px;height:22px}
+.bell .dot{position:absolute;top:-4px;right:-4px;background:var(--gold);color:#1a1205;font-size:10px;font-weight:700;border-radius:10px;padding:0 5px;line-height:15px}
+.userchip{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:11px;padding:6px 12px 6px 6px;transition:.15s}
+.userchip:hover{border-color:var(--gold)}
+.userchip .ava{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#5a4632,#2a2018);display:grid;place-items:center;color:#d8c4a8}
+.userchip .ava svg{width:20px;height:20px}
+.userchip b{font-size:14px;display:block}
+.userchip small{font-size:12px;color:var(--gold)}
+main{flex:1;min-width:0}
+
+/* Banner */
+.banner{position:relative;min-height:195px;display:flex;align-items:flex-end;overflow:hidden;
+  background:linear-gradient(90deg,rgba(10,8,6,.97) 28%,rgba(10,8,6,.5) 65%,rgba(10,8,6,.25)),
+  url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat,#1c1109}
+.bcrumb{position:absolute;top:16px;left:36px;color:var(--dim);font-size:13px;z-index:2;display:flex;align-items:center;gap:7px}
+.bcrumb a:hover{color:var(--gold)}
+.binner{position:relative;z-index:2;padding:22px 36px}
+.binner h1{font-size:34px;font-weight:800;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.binner .sub{color:#d6cfc4;font-size:14.5px;margin-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.binner .sub .price{color:var(--gold);font-weight:700}
+.status-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:12.5px;font-weight:600;background:var(--green-bg);color:var(--green)}
+.status-pill .dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Page Tabs */
+.page-tabs{display:flex;gap:6px;padding:0 36px;border-bottom:1px solid var(--border-soft)}
+.ptab{background:none;border:none;color:var(--dim);font-size:15px;font-weight:600;padding:14px 22px;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.15s;cursor:pointer}
+.ptab:hover{color:var(--text)}
+.ptab.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:1fr 358px;gap:28px;padding:28px 36px 60px;align-items:start}
+
+/* ── SCORE OVERVIEW ── */
+.score-overview{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px}
+.score-header{display:flex;align-items:flex-start;gap:28px;margin-bottom:24px;flex-wrap:wrap}
+.overall-block{text-align:center;flex-shrink:0}
+.overall-block .big-score{font-size:58px;font-weight:800;letter-spacing:-2px;line-height:1;color:var(--gold)}
+.overall-block .score-of{font-size:14px;color:var(--dim);margin-top:2px}
+.overall-block .score-lbl{font-size:12.5px;font-weight:700;color:var(--gold);margin-top:6px;background:rgba(230,169,60,.12);padding:3px 12px;border-radius:20px;display:inline-block}
+.score-sep{width:1px;height:90px;background:var(--border);flex-shrink:0;align-self:center}
+.score-right{flex:1;min-width:200px}
+.score-right .sr-total{font-size:21px;font-weight:700;margin-bottom:3px}
+.score-right .sr-sub{color:var(--dim);font-size:13px;margin-bottom:16px}
+.dist-bars{display:flex;flex-direction:column;gap:7px}
+.dist-row{display:flex;align-items:center;gap:10px;font-size:12.5px}
+.dist-row .dl{width:38px;color:var(--dim);text-align:right}
+.dist-row .dtrack{flex:1;height:7px;background:var(--surface-2);border-radius:4px;overflow:hidden}
+.dist-row .dfill{height:100%;border-radius:4px}
+.dist-row .dc{width:30px;color:var(--dim)}
+
+/* Category grid */
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:20px}
+.cat-card{background:var(--surface-2);border:1px solid var(--border-soft);border-radius:12px;padding:13px 15px;display:flex;align-items:center;gap:12px;transition:.15s}
+.cat-card:hover{border-color:rgba(230,169,60,.25)}
+.cat-card .ci{font-size:22px;flex-shrink:0}
+.cat-card .cc{flex:1;min-width:0}
+.cat-card .cc .cn{font-size:11px;color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.cat-card .cc .cb{height:5px;background:var(--surface);border-radius:3px;overflow:hidden;margin-bottom:5px}
+.cat-card .cc .cbf{height:100%;border-radius:3px}
+.cat-card .cs{font-size:21px;font-weight:800;line-height:1;flex-shrink:0}
+.cat-card .cs .cm{font-size:10.5px;font-weight:400;color:var(--dim)}
+
+/* Sentiment */
+.sentiment h4{font-size:13px;font-weight:700;color:var(--dim);margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px}
+.stags{display:flex;flex-wrap:wrap;gap:8px}
+.stag{display:inline-flex;align-items:center;gap:7px;background:var(--surface-2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12.5px;cursor:pointer;transition:.15s}
+.stag:hover{border-color:var(--gold)}
+.stag .sc{font-weight:700;font-size:12px}
+.stag.pos .sc{color:var(--gold)}
+.stag.neg .sc{color:var(--red)}
+
+/* Review toolbar */
+.rev-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.rev-toolbar .rc{font-size:19px;font-weight:700;flex:1;min-width:130px}
+.rev-toolbar .rc span{color:var(--dim);font-size:13px;font-weight:400;margin-left:5px}
+.ftab{background:none;border:1px solid var(--border);color:var(--dim);border-radius:20px;padding:6px 15px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;font-family:inherit}
+.ftab:hover{color:var(--text);border-color:#3a3a42}
+.ftab.active{background:var(--gold);color:#1a1205;border-color:var(--gold)}
+.sort-sel{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:7px 26px 7px 12px;font-size:13px;font-family:inherit;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%239a958c' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;transition:.15s}
+.sort-sel:hover{border-color:var(--gold)}
+
+/* ── REVIEW CARDS ── */
+.rev-list{display:flex;flex-direction:column}
+.rev-card{padding:22px 0;border-bottom:1px solid var(--border-soft)}
+.rev-card:last-of-type{border-bottom:none}
+.rev-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px}
+.rev-av{width:50px;height:50px;border-radius:50%;flex-shrink:0;background-size:cover;background-position:center;border:2px solid var(--border)}
+.rev-info{flex:1}
+.rev-info .rname{font-size:15px;font-weight:700;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.badge-v{font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;background:rgba(230,169,60,.13);color:var(--gold);border:1px solid rgba(230,169,60,.3)}
+.badge-reg{background:rgba(91,141,239,.12);color:#5b8def;border-color:rgba(91,141,239,.3)}
+.rev-info .rmeta{font-size:12px;color:var(--dim);margin-top:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.visit-chip{font-size:11px;padding:2px 8px;border-radius:5px;background:var(--surface-2);color:var(--mute)}
+.score-box{text-align:center;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:7px 13px;flex-shrink:0}
+.score-box .sb{font-size:24px;font-weight:800;line-height:1}
+.score-box .so{font-size:10px;color:var(--dim)}
+.score-box.sh .sb{color:var(--gold)}
+.score-box.sm .sb{color:var(--orange)}
+.score-box.sl .sb{color:var(--red)}
+
+/* Mini cat bars inside each review */
+.rev-cats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;padding:13px 14px;background:rgba(255,255,255,.023);border-radius:10px;border:1px solid var(--border-soft)}
+.rc-row{display:flex;align-items:center;gap:7px;font-size:11.5px}
+.rc-row .rcn{color:var(--dim);flex:none;width:68px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rc-row .rct{flex:1;height:5px;background:var(--surface-2);border-radius:3px;overflow:hidden}
+.rc-row .rcf{display:block;height:100%;border-radius:3px}
+.rc-row .rcv{font-weight:700;font-size:11.5px;min-width:16px;text-align:right}
+.fh{background:var(--gold)}
+.fm{background:var(--orange)}
+.fl{background:var(--red)}
+
+.rev-text{color:#d4cec5;font-size:14.5px;line-height:1.68;margin-bottom:13px}
+.rev-photos{display:flex;gap:8px;margin-bottom:13px}
+.rev-photo{width:78px;height:60px;border-radius:9px;background-size:cover;background-position:center;border:1px solid var(--border);cursor:pointer;transition:.15s;flex-shrink:0}
+.rev-photo:hover{transform:scale(1.05);border-color:var(--gold)}
+.rev-foot{display:flex;align-items:center;gap:12px}
+.helpful-btn{display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--border);color:var(--dim);border-radius:7px;padding:7px 13px;font-size:12.5px;cursor:pointer;font-family:inherit;transition:.15s}
+.helpful-btn:hover{border-color:var(--gold);color:var(--gold)}
+.helpful-btn.liked{background:rgba(230,169,60,.12);border-color:var(--gold);color:var(--gold)}
+.helpful-btn svg{width:14px;height:14px}
+.cmt-btn{display:inline-flex;align-items:center;gap:5px;color:var(--mute);font-size:12.5px;background:none;border:none;padding:7px 2px;cursor:pointer;font-family:inherit;transition:.15s}
+.cmt-btn:hover{color:var(--text)}
+.cmt-btn svg{width:14px;height:14px}
+.load-more{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:14px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:14px;transition:.15s}
+.load-more:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ── WRITE REVIEW (sidebar) ── */
+.write-card{background:linear-gradient(145deg,rgba(230,169,60,.09),rgba(230,169,60,.02));border:1px solid rgba(230,169,60,.26);border-radius:16px;padding:22px;margin-bottom:20px}
+.write-card h3{font-size:17px;font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:8px}
+.write-card .wsub{color:var(--dim);font-size:12.5px;margin-bottom:18px;line-height:1.5}
+
+/* Rating rows */
+.rat-section{display:flex;flex-direction:column;gap:13px;margin-bottom:16px}
+.rat-row .rl{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:5px;font-size:12.5px}
+.rat-row .rl .rn{font-weight:600;display:flex;align-items:center;gap:5px}
+.rat-row .rl .rv{font-size:17px;font-weight:800;min-width:22px;text-align:right;transition:color .12s}
+.rat-row .rl .rd{font-size:10.5px;color:var(--dim);display:block;text-align:right}
+.rat-btns{display:flex;gap:3px}
+.rb{flex:1;height:30px;border-radius:5px;border:1px solid var(--border);background:var(--surface-2);color:var(--dim);font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:.1s;padding:0}
+.rb:hover{border-color:var(--gold);color:var(--gold)}
+.rb.sh{background:var(--gold);border-color:var(--gold);color:#1a1205}
+.rb.sm{background:var(--orange);border-color:var(--orange);color:#fff}
+.rb.sl{background:var(--red);border-color:var(--red);color:#fff}
+.rb.dim{opacity:.28}
+
+/* Computed score */
+.comp-score{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px;margin-bottom:14px;display:flex;align-items:center;gap:13px}
+.comp-score .cn{font-size:30px;font-weight:800;line-height:1;min-width:48px}
+.comp-score .ci b{font-size:13.5px;display:block;margin-bottom:1px}
+.comp-score .ci p{color:var(--dim);font-size:11.5px}
+.comp-score .ci .cb{height:7px;background:var(--surface-2);border-radius:4px;overflow:hidden;margin-top:7px;width:100%}
+.comp-score .ci .cbf{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold-dark),var(--gold-bright));transition:width .3s ease}
+
+/* Text fields */
+.wfield{margin-bottom:11px}
+.wfield label{display:block;font-size:12px;color:var(--dim);font-weight:600;margin-bottom:5px;text-transform:uppercase;letter-spacing:.3px}
+.wfield input,.wfield textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);padding:10px 13px;font-size:13.5px;font-family:inherit;outline:none;transition:.15s;resize:none}
+.wfield input:focus,.wfield textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(230,169,60,.1)}
+.wfield input::placeholder,.wfield textarea::placeholder{color:var(--mute)}
+.wfield textarea{min-height:85px}
+
+/* Visit chips */
+.vchips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.vc{border:1px solid var(--border);background:var(--surface);color:var(--dim);border-radius:8px;padding:6px 11px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}
+.vc:hover{border-color:var(--gold);color:var(--gold)}
+.vc.active{background:var(--gold);color:#1a1205;border-color:var(--gold)}
+
+/* Recommend toggle */
+.rec-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 13px}
+.rec-row .rrl{flex:1;font-size:13px;font-weight:600}
+.rec-btns{display:flex;gap:6px}
+.recb{border:1px solid var(--border);background:var(--surface-2);color:var(--dim);border-radius:7px;padding:6px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}
+.recb.y.active{background:var(--green);border-color:var(--green);color:#fff}
+.recb.n.active{background:var(--red);border-color:var(--red);color:#fff}
+
+.submit-btn{width:100%;background:var(--gold);color:#1a1205;border:none;font-size:15px;font-weight:700;padding:13px;border-radius:10px;cursor:pointer;font-family:inherit;transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.submit-btn:hover{background:var(--gold-bright);transform:translateY(-1px)}
+.submit-btn svg{width:17px;height:17px}
+
+/* Sidebar detail card */
+.det-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px}
+.det-card h3{font-size:15.5px;font-weight:700;margin-bottom:14px}
+.det-list{display:flex;flex-direction:column;gap:11px}
+.det-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--dim)}
+.det-item svg{width:16px;height:16px;color:var(--gold);flex-shrink:0;margin-top:1px}
+.det-item strong{color:var(--text)}
+.minimap{height:128px;border-radius:10px;background:linear-gradient(135deg,#2a2f28,#1a2030);position:relative;border:1px solid var(--border);margin-top:14px;overflow:hidden}
+.minimap .mpin{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);color:var(--gold)}
+.minimap .mpin svg{width:24px;height:30px}
+.dir-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;background:var(--gold);color:#1a1205;border:none;font-size:13.5px;font-weight:700;padding:11px;border-radius:9px;margin-top:10px;cursor:pointer;transition:.15s}
+.dir-btn:hover{background:var(--gold-bright)}
+
+/* Photo utility classes */
+.p1{background:url('https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=200&q=65') center/cover no-repeat #251607}
+.p2{background:url('https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=200&q=65') center/cover no-repeat #1e1006}
+.p3{background:url('https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=200&q=65') center/cover no-repeat #1e120c}
+.p4{background:url('https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=200&q=65') center/cover no-repeat #2e2208}
+.p5{background:url('https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=200&q=65') center/cover no-repeat #2c1c08}
+.av1{background:url('https://images.unsplash.com/photo-1567932783552-e305bbf70b63?auto=format&fit=crop&w=120&q=65') center/cover no-repeat #2a1c14}
+.av2{background:url('https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=120&q=65') center/cover no-repeat #1e1006}
+.av3{background:url('https://images.unsplash.com/photo-1564489563601-c53cfc451e93?auto=format&fit=crop&w=120&q=65') center/cover no-repeat #241810}
+.av4{background:url('https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?auto=format&fit=crop&w=120&q=65') center/cover no-repeat #1a1a24}
+.av5{background:url('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=120&q=65') center/cover no-repeat #241810}
+
+@media(max-width:1200px){.layout{grid-template-columns:1fr}.cat-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.rail{display:none}.topnav{display:none}.binner h1{font-size:26px}.layout{padding:18px 16px 40px}.cat-grid{grid-template-columns:1fr 1fr}.rev-cats{grid-template-columns:1fr 1fr}.score-header{flex-direction:column;gap:14px}.score-sep{display:none}.rat-btns{gap:2px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="rail">
+    <a href="home.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8M5 9v11h14V9"/></svg>Home</a>
+    <a href="explore.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Explore</a>
+    <a href="discover.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="m15 9-4 1-1 4 4-1z"/></svg>Discover</a>
+    <a href="restaurant.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 3v7a3 3 0 0 0 6 0V3M7 10v11M17 3c-2 0-3 2-3 5s1 4 3 4v9"/></svg>Menu</a>
+    <a href="reviews.html" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.5 5 5.5.8-4 3.9 1 5.5L12 16l-5 2.6 1-5.5-4-3.9 5.5-.8z"/></svg>Reviews</a>
+    <a href="profile.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Profile</a>
+    <div class="spacer"></div>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .9-1 1.7M12 17h.01"/></svg>Help</a>
+  </nav>
+
+  <main>
+    <header class="topbar">
+      <a href="home.html" class="brand">
+        <span class="logo"><svg viewBox="0 0 24 24" fill="#1a1205"><path d="M6 2c-.5 0-1 .4-1 1v6c0 1 .5 1.7 1.3 2L6 22h2l.7-11C9.5 10.7 10 10 10 9V3c0-.6-.4-1-1-1s-1 .4-1 1v4H7V3c0-.6-.4-1-1-1zm12 0c-1.7 0-3 2-3 5 0 2 .8 3.4 2 3.8L18.3 22H20l-1-11.2c1.2-.4 2-1.8 2-3.8 0-3-1.3-5-3-5z"/></svg></span>
+        <div class="name">Dining Experience<span>Platform</span></div>
+      </a>
+      <nav class="topnav">
+        <a href="home.html">Home</a>
+        <a href="explore.html">Explore</a>
+        <a href="discover.html">Discover</a>
+        <a href="restaurant.html">Restaurant</a>
+        <a href="reviews.html" class="active">Reviews</a>
+        <a href="profile.html">Profile</a>
+      </nav>
+      <div class="topright">
+        <span class="bell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6M10 20a2 2 0 0 0 4 0"/></svg><span class="dot">3</span></span>
+        <a href="profile.html" class="userchip"><span class="ava"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6z"/></svg></span><span><b>David O'Brien</b><small>Gold Member</small></span></a>
+      </div>
+    </header>
+
+    <section class="banner">
+      <div class="bcrumb">
+        <a href="home.html">Home</a><span>›</span>
+        <a href="explore.html">Restaurants</a><span>›</span>
+        <a href="restaurant.html">Fusion Grill</a><span>›</span>
+        <span style="color:var(--text)">Reviews</span>
+      </div>
+      <div class="binner">
+        <h1>Fusion Grill <span style="color:var(--gold);font-size:20px;letter-spacing:1px">★★★★★</span></h1>
+        <div class="sub">
+          <span>🍴 African, BBQ &amp; Grill</span>
+          <span style="color:var(--mute)">|</span>
+          <span class="price">$$ – $$$</span>
+          <span style="color:var(--mute)">|</span>
+          <span class="status-pill"><span class="dot"></span> Open · Closes 10 PM</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="page-tabs">
+      <button class="ptab" onclick="location.href='restaurant.html'">Menu</button>
+      <button class="ptab" onclick="location.href='restaurant.html'">Photos</button>
+      <button class="ptab active">Reviews</button>
+      <button class="ptab" onclick="location.href='restaurant.html'">About</button>
+    </div>
+
+    <div class="layout">
+      <!-- ════ LEFT COLUMN ════ -->
+      <div>
+
+        <!-- SCORE OVERVIEW CARD -->
+        <div class="score-overview">
+          <div class="score-header">
+            <div class="overall-block">
+              <div class="big-score">9.2</div>
+              <div class="score-of">out of 10</div>
+              <div class="score-lbl">Excellent</div>
+            </div>
+            <div class="score-sep"></div>
+            <div class="score-right">
+              <div class="sr-total">436 verified reviews</div>
+              <div class="sr-sub">Dine-in &amp; delivery · Last 12 months</div>
+              <div class="dist-bars">
+                <div class="dist-row"><span class="dl">10</span><span class="dtrack"><span class="dfill" style="width:42%;background:var(--gold)"></span></span><span class="dc">183</span></div>
+                <div class="dist-row"><span class="dl">8–9</span><span class="dtrack"><span class="dfill" style="width:36%;background:var(--gold)"></span></span><span class="dc">157</span></div>
+                <div class="dist-row"><span class="dl">6–7</span><span class="dtrack"><span class="dfill" style="width:13%;background:var(--orange)"></span></span><span class="dc">57</span></div>
+                <div class="dist-row"><span class="dl">4–5</span><span class="dtrack"><span class="dfill" style="width:6%;background:var(--orange)"></span></span><span class="dc">26</span></div>
+                <div class="dist-row"><span class="dl">1–3</span><span class="dtrack"><span class="dfill" style="width:3%;background:var(--red)"></span></span><span class="dc">13</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CATEGORY SCORES -->
+          <div class="cat-grid">
+            <div class="cat-card">
+              <span class="ci">🍽</span>
+              <div class="cc">
+                <div class="cn">Food Quality</div>
+                <div class="cb"><div class="cbf" style="width:96%;background:var(--gold)"></div></div>
+              </div>
+              <div class="cs" style="color:var(--gold)">9.6<span class="cm">/10</span></div>
+            </div>
+            <div class="cat-card">
+              <span class="ci">👨‍💼</span>
+              <div class="cc">
+                <div class="cn">Service</div>
+                <div class="cb"><div class="cbf" style="width:88%;background:var(--gold)"></div></div>
+              </div>
+              <div class="cs" style="color:var(--gold)">8.8<span class="cm">/10</span></div>
+            </div>
+            <div class="cat-card">
+              <span class="ci">✨</span>
+              <div class="cc">
+                <div class="cn">Ambiance</div>
+                <div class="cb"><div class="cbf" style="width:90%;background:var(--gold)"></div></div>
+              </div>
+              <div class="cs" style="color:var(--gold)">9.0<span class="cm">/10</span></div>
+            </div>
+            <div class="cat-card">
+              <span class="ci">💰</span>
+              <div class="cc">
+                <div class="cn">Value for Money</div>
+                <div class="cb"><div class="cbf" style="width:84%;background:var(--orange)"></div></div>
+              </div>
+              <div class="cs" style="color:var(--orange)">8.4<span class="cm">/10</span></div>
+            </div>
+            <div class="cat-card">
+              <span class="ci">🧹</span>
+              <div class="cc">
+                <div class="cn">Cleanliness</div>
+                <div class="cb"><div class="cbf" style="width:94%;background:var(--gold)"></div></div>
+              </div>
+              <div class="cs" style="color:var(--gold)">9.4<span class="cm">/10</span></div>
+            </div>
+            <div class="cat-card">
+              <span class="ci">⏱</span>
+              <div class="cc">
+                <div class="cn">Wait Time</div>
+                <div class="cb"><div class="cbf" style="width:74%;background:var(--orange)"></div></div>
+              </div>
+              <div class="cs" style="color:var(--orange)">7.4<span class="cm">/10</span></div>
+            </div>
+          </div>
+
+          <!-- SENTIMENT TAGS -->
+          <div class="sentiment">
+            <h4>What diners are saying</h4>
+            <div class="stags">
+              <span class="stag pos">Worth the price <span class="sc">142</span></span>
+              <span class="stag pos">Friendly staff <span class="sc">98</span></span>
+              <span class="stag pos">Great atmosphere <span class="sc">87</span></span>
+              <span class="stag pos">Perfect for dates <span class="sc">76</span></span>
+              <span class="stag pos">Must-try BBQ <span class="sc">65</span></span>
+              <span class="stag pos">Generous portions <span class="sc">54</span></span>
+              <span class="stag pos">Great cocktails <span class="sc">28</span></span>
+              <span class="stag neg">Slow wait times <span class="sc">31</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="rev-toolbar">
+          <div class="rc">436 Reviews <span>· Fusion Grill</span></div>
+          <button class="ftab active">All</button>
+          <button class="ftab">5 Stars</button>
+          <button class="ftab">With Photos</button>
+          <select class="sort-sel">
+            <option>Most Helpful</option>
+            <option>Most Recent</option>
+            <option>Highest Score</option>
+            <option>Lowest Score</option>
+          </select>
+        </div>
+
+        <!-- ── REVIEW CARDS ── -->
+        <div class="rev-list">
+
+          <!-- Review 1 · Sarah K. -->
+          <div class="rev-card">
+            <div class="rev-head">
+              <div class="rev-av av1"></div>
+              <div class="rev-info">
+                <div class="rname">Sarah K. <span class="badge-v">✔ Verified</span></div>
+                <div class="rmeta"><span>2 days ago</span><span>·</span><span>Dine-in</span><span class="visit-chip">🍴 Couple</span></div>
+              </div>
+              <div class="score-box sh"><div class="sb">9.5</div><div class="so">/ 10</div></div>
+            </div>
+            <div class="rev-cats">
+              <div class="rc-row"><span class="rcn">🍽 Food</span><span class="rct"><span class="rcf fh" style="width:100%"></span></span><span class="rcv" style="color:var(--gold)">10</span></div>
+              <div class="rc-row"><span class="rcn">👨‍💼 Service</span><span class="rct"><span class="rcf fh" style="width:90%"></span></span><span class="rcv" style="color:var(--gold)">9</span></div>
+              <div class="rc-row"><span class="rcn">✨ Ambiance</span><span class="rct"><span class="rcf fh" style="width:90%"></span></span><span class="rcv" style="color:var(--gold)">9</span></div>
+              <div class="rc-row"><span class="rcn">💰 Value</span><span class="rct"><span class="rcf fh" style="width:80%"></span></span><span class="rcv" style="color:var(--gold)">8</span></div>
+              <div class="rc-row"><span class="rcn">🧹 Clean</span><span class="rct"><span class="rcf fh" style="width:100%"></span></span><span class="rcv" style="color:var(--gold)">10</span></div>
+              <div class="rc-row"><span class="rcn">⏱ Wait</span><span class="rct"><span class="rcf fh" style="width:80%"></span></span><span class="rcv" style="color:var(--gold)">8</span></div>
+            </div>
+            <p class="rev-text">The Chicken BBQ Platter was absolutely phenomenal — smoky, juicy, and full of flavor. Our waiter James was genuinely attentive; he remembered we were celebrating and brought a complimentary sauce tasting before our mains. The restaurant was spotless and the warm amber lighting made the whole evening feel special. One of the best dine-in experiences I've had in Lilongwe. We'll definitely be back.</p>
+            <div class="rev-photos">
+              <div class="rev-photo p1"></div>
+              <div class="rev-photo p2"></div>
+            </div>
+            <div class="rev-foot">
+              <button class="helpful-btn" data-count="29"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 11v9H3v-9zM7 11l4-8a2 2 0 0 1 3 2l-1 6h6a2 2 0 0 1 2 2.3l-1.2 6A2 2 0 0 1 18 21H7"/></svg><span class="hcount">29</span> Helpful</button>
+              <button class="cmt-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> 6 comments</button>
+            </div>
+          </div>
+
+          <!-- Review 2 · Jerry M. -->
+          <div class="rev-card">
+            <div class="rev-head">
+              <div class="rev-av av2"></div>
+              <div class="rev-info">
+                <div class="rname">Jerry M. <span class="badge-v badge-reg">★ Regular</span></div>
+                <div class="rmeta"><span>1 week ago</span><span>·</span><span>Dine-in</span><span class="visit-chip">🎉 Anniversary</span></div>
+              </div>
+              <div class="score-box sh"><div class="sb">9.3</div><div class="so">/ 10</div></div>
+            </div>
+            <div class="rev-cats">
+              <div class="rc-row"><span class="rcn">🍽 Food</span><span class="rct"><span class="rcf fh" style="width:100%"></span></span><span class="rcv" style="color:var(--gold)">10</span></div>
+              <div class="rc-row"><span class="rcn">👨‍💼 Service</span><span class="rct"><span class="rcf fh" style="width:100%"></span></span><span class="rcv" style="color:var(--gold)">10</span></div>
+              <div class="rc-row"><span class="rcn">✨ Ambiance</span><span class="rct"><span class="rcf fh" style="width:100%"></span></span><span class="rcv" style="color:var(--gold)">10</span></div>
+              <div class="rc-row"><span class="rcn">💰 Value</span><span class="rct"><span class="rcf fh" style="width:90%"></span></span><span class="rcv" style="color:var(--gold)">9</span></div>
+              <div class="rc-row"><span class="rcn">🧹 Clean</span><span class="rct"><span class="rcf fh" style="width:90%"></span></span><span class="rcv" style="color:var(--gold)">9</span></div>
+              <div class="rc-row"><span class="rcn">⏱ Wait</span><span class="rct"><span class="rcf fm" style="width:70%"></span></span><span class="rcv" style="color:var(--orange)">7</span></div>
+            </div>
+            <p class="rev-text">Came for our anniversary and it exceeded every expectation. The ribeye steak was cooked to perfection — the kind you remember weeks later. Our waitress Grace was exceptional: warm, professional, and she brought complimentary dessert without us asking. The ambiance — low lighting, well-spaced tables, soft background music — is exactly what a special night out should feel like. Friday wait time was a bit long but honestly, it was worth every minute.</p>
+            <div class="rev-foot">
+              <button class="helpful-btn" data-count="12"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 11v9H3v-9zM7 11l4-8a2 2 0 0 1 3 2l-1 6h6a2 2 0 0 1 2 2.3l-1.2 6A2 2 0 0 1 18 21H7"/></svg><span class="hcount">12</span> Helpful</button>
+              <button class="cmt-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> 2 comments</button>
+            </div>
+          </div>
+
+          <!-- Review 3 · Linda S. -->
+          <div class="rev-card">
+            <div class="rev-head">
+              <div class="rev-av av3"></div>
+              <div class="rev-info">
+                <div class="rname">Linda S.</div>
+                <div class="rmeta"><span>3 weeks ago</span><span>·</span><span>Dine-in</span><span class="visit-chip">👨‍👩‍👧 Family</span></div>
+              </div>
+              <div class="score-box sm"><div class="sb">7.8</div><div class="so">/ 10</div></div>
+            </div>
+            <div class="rev-cats">
+              <div class="rc-row"><span class="rcn">🍽 Food</span><span class="rct"><span class="rcf fh" style="width:90%"></span></span><span class="rcv" style="color:var(--gold)">9</span></div>
+              <div class="rc-row"><span class="rcn">👨‍💼 Service</span><span class="rct"><span class="rcf fm" style="width:70%"></span></span><span class="rcv" style="color:var(--orange)">7</span></div>
+              <div class="rc-row"><span class="rcn">✨ Ambiance</span><span class="rct"><span class="rcf fh" style="width:80%"></span></span><span class="rcv" style="color:var(--gold)">8</span></div>
+              <div class="rc-row"><span class="rcn">💰 Value</span><span class="rct"><span class="rcf fh" style="width:80%"></span></span><span class="rcv" style="color:var(--gold)">8</span></div>
+              <div class="rc-row"><span class="rcn">🧹 Clean</span><span class="rct"><span class="rcf fh" style="width:90%"></span></span><span class="rcv" style="color:var(--gold)">9</span></div>
+              <div class="rc-row"><span class="rcn">⏱ Wait</span><span class="rct"><span class="rcf fm" style="width:60%"></span></span><span class="rcv" style="color:var(--orange)">6</span></div>
+            </div>
+            <p class="rev-text">The food was genuinely excellent — peri peri chicken was a hit with the whole family and the BBQ ribs were the best we've had in Lilongwe. Portions are generous for the price. Service let it down though: our waiter was friendly but slow — we had to ask twice for drink refills and the wait between courses was longer than it should have been for a weeknight. If they tighten up the service side, this place would be flawless.</p>
+            <div class="rev-foot">
+              <button class="helpful-btn" data-count="8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 11v9H3v-9zM7 11l4-8a2 2 0 0 1 3 2l-1 6h6a2 2 0 0 1 2 2.3l-1.2 6A2 2 0 0 1 18 21H7"/></svg><span class="hcount">8</span> Helpful</button>
+              <button class="cmt-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> 1 comment</button>
+            </div>
+          </div>
+
+          <!-- Review 4 · Michael T. -->
+          <div class="rev-card">
+            <div class="rev-head">
+              <div class="rev-av av4"></div>
+              <div class="rev-info">
+                <div class="rname">Michael T. <span class="badge-v">✔ Verified</span></div>
+                <div class="rmeta"><span>2 months ago</span><span>·</span><span>Dine-in</span><span class="visit-chip">🎂 Birthday</span></div>
+              </div>
+              <div class="score-box sh"><div class="sb">9.8</div><div class="so">/ 10</div></div>
+            </div>
+            <div class="rev-cats">
+              <div class="rc-row"><span class="rcn">🍽 Food</span><span class="rct"><span class="rcf fh" style="width:100%"></span></span><span class="rcv" style="color:var(--gold)">10</span></div>
+              <div class="rc-row"><span class="rcn">👨‍💼 Service</span><span class="rct"><span class="rcf fh" style="width:100%"></span></span><span class="rcv" style="color:var(--gold)">10</span></div>
+              <div class="rc-row"><span class="rcn">✨ Ambiance</span><span class="rct"><span class="rcf fh" style="width:100%"></span></span><span class="rcv" style="color:var(--gold)">10</span></div>
+              <div class="rc-row"><span class="rcn">💰 Value</span><span class="rct"><span class="rcf fh" style="width:90%"></span></span><span class="rcv" style="color:var(--gold)">9</span></div>
+              <div class="rc-row"><span class="rcn">🧹 Clean</span><span class="rct"><span class="rcf fh" style="width:100%"></span></span><span class="rcv" style="color:var(--gold)">10</span></div>
+              <div class="rc-row"><span class="rcn">⏱ Wait</span><span class="rct"><span class="rcf fh" style="width:90%"></span></span><span class="rcv" style="color:var(--gold)">9</span></div>
+            </div>
+            <p class="rev-text">One of the best dining experiences I've had full stop. Came for a birthday and our waiter Daniel remembered our names from the reservation, suggested a wine pairing with each course, and checked in at exactly the right moments — never intrusive, always present. The chef's special was faultless: every element on the plate balanced perfectly. The restaurant manager even stopped by our table to wish my wife a happy birthday. That kind of hospitality is rare. Truly outstanding.</p>
+            <div class="rev-photos">
+              <div class="rev-photo p3"></div>
+              <div class="rev-photo p4"></div>
+              <div class="rev-photo p5"></div>
+            </div>
+            <div class="rev-foot">
+              <button class="helpful-btn" data-count="21"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 11v9H3v-9zM7 11l4-8a2 2 0 0 1 3 2l-1 6h6a2 2 0 0 1 2 2.3l-1.2 6A2 2 0 0 1 18 21H7"/></svg><span class="hcount">21</span> Helpful</button>
+              <button class="cmt-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> 4 comments</button>
+            </div>
+          </div>
+
+          <!-- Review 5 · Amara J. -->
+          <div class="rev-card">
+            <div class="rev-head">
+              <div class="rev-av av5"></div>
+              <div class="rev-info">
+                <div class="rname">Amara J. <span class="badge-v">✔ Verified</span></div>
+                <div class="rmeta"><span>1 month ago</span><span>·</span><span>Delivery</span><span class="visit-chip">🏠 Delivery</span></div>
+              </div>
+              <div class="score-box sh"><div class="sb">8.3</div><div class="so">/ 10</div></div>
+            </div>
+            <div class="rev-cats">
+              <div class="rc-row"><span class="rcn">🍽 Food</span><span class="rct"><span class="rcf fh" style="width:90%"></span></span><span class="rcv" style="color:var(--gold)">9</span></div>
+              <div class="rc-row"><span class="rcn">👨‍💼 Service</span><span class="rct"><span class="rcf fh" style="width:80%"></span></span><span class="rcv" style="color:var(--gold)">8</span></div>
+              <div class="rc-row"><span class="rcn">✨ Ambiance</span><span class="rct"><span class="rcf fh" style="width:80%"></span></span><span class="rcv" style="color:var(--gold)">8</span></div>
+              <div class="rc-row"><span class="rcn">💰 Value</span><span class="rct"><span class="rcf fh" style="width:80%"></span></span><span class="rcv" style="color:var(--gold)">8</span></div>
+              <div class="rc-row"><span class="rcn">🧹 Clean</span><span class="rct"><span class="rcf fh" style="width:90%"></span></span><span class="rcv" style="color:var(--gold)">9</span></div>
+              <div class="rc-row"><span class="rcn">⏱ Wait</span><span class="rct"><span class="rcf fm" style="width:70%"></span></span><span class="rcv" style="color:var(--orange)">7</span></div>
+            </div>
+            <p class="rev-text">Solid delivery experience — food arrived well packaged and still hot, which is rare. The Chicken BBQ Platter travels well. Delivery driver was on time and polite. Took two points off because the quoted time was 20–25 minutes but it ran closer to 35, and one side dish was missing from my order. To their credit, they refunded the missing item without any fuss when I called. The food quality makes this one of the best delivery options in Lilongwe.</p>
+            <div class="rev-foot">
+              <button class="helpful-btn" data-count="15"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 11v9H3v-9zM7 11l4-8a2 2 0 0 1 3 2l-1 6h6a2 2 0 0 1 2 2.3l-1.2 6A2 2 0 0 1 18 21H7"/></svg><span class="hcount">15</span> Helpful</button>
+              <button class="cmt-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> 3 comments</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="load-more" id="load-more">
+          Load 20 More Reviews
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </div>
+
+      <!-- ════ SIDEBAR ════ -->
+      <aside>
+
+        <!-- WRITE A REVIEW -->
+        <div class="write-card">
+          <h3>✍ Share Your Experience</h3>
+          <div class="wsub">Rate your visit on each dimension. Scores update your overall live as you go.</div>
+
+          <div class="rat-section" id="rat-section">
+
+            <div class="rat-row" data-cat="food">
+              <div class="rl">
+                <span class="rn">🍽 Food Quality</span>
+                <div><span class="rv" id="rv-food" style="color:var(--mute)">—</span><span class="rd" id="rd-food">Tap to rate</span></div>
+              </div>
+              <div class="rat-btns" id="rb-food">
+                <button class="rb" data-n="1">1</button><button class="rb" data-n="2">2</button><button class="rb" data-n="3">3</button><button class="rb" data-n="4">4</button><button class="rb" data-n="5">5</button><button class="rb" data-n="6">6</button><button class="rb" data-n="7">7</button><button class="rb" data-n="8">8</button><button class="rb" data-n="9">9</button><button class="rb" data-n="10">10</button>
+              </div>
+            </div>
+
+            <div class="rat-row" data-cat="service">
+              <div class="rl">
+                <span class="rn">👨‍💼 Service</span>
+                <div><span class="rv" id="rv-service" style="color:var(--mute)">—</span><span class="rd" id="rd-service">Tap to rate</span></div>
+              </div>
+              <div class="rat-btns" id="rb-service">
+                <button class="rb" data-n="1">1</button><button class="rb" data-n="2">2</button><button class="rb" data-n="3">3</button><button class="rb" data-n="4">4</button><button class="rb" data-n="5">5</button><button class="rb" data-n="6">6</button><button class="rb" data-n="7">7</button><button class="rb" data-n="8">8</button><button class="rb" data-n="9">9</button><button class="rb" data-n="10">10</button>
+              </div>
+            </div>
+
+            <div class="rat-row" data-cat="ambiance">
+              <div class="rl">
+                <span class="rn">✨ Ambiance</span>
+                <div><span class="rv" id="rv-ambiance" style="color:var(--mute)">—</span><span class="rd" id="rd-ambiance">Tap to rate</span></div>
+              </div>
+              <div class="rat-btns" id="rb-ambiance">
+                <button class="rb" data-n="1">1</button><button class="rb" data-n="2">2</button><button class="rb" data-n="3">3</button><button class="rb" data-n="4">4</button><button class="rb" data-n="5">5</button><button class="rb" data-n="6">6</button><button class="rb" data-n="7">7</button><button class="rb" data-n="8">8</button><button class="rb" data-n="9">9</button><button class="rb" data-n="10">10</button>
+              </div>
+            </div>
+
+            <div class="rat-row" data-cat="value">
+              <div class="rl">
+                <span class="rn">💰 Value for Money</span>
+                <div><span class="rv" id="rv-value" style="color:var(--mute)">—</span><span class="rd" id="rd-value">Tap to rate</span></div>
+              </div>
+              <div class="rat-btns" id="rb-value">
+                <button class="rb" data-n="1">1</button><button class="rb" data-n="2">2</button><button class="rb" data-n="3">3</button><button class="rb" data-n="4">4</button><button class="rb" data-n="5">5</button><button class="rb" data-n="6">6</button><button class="rb" data-n="7">7</button><button class="rb" data-n="8">8</button><button class="rb" data-n="9">9</button><button class="rb" data-n="10">10</button>
+              </div>
+            </div>
+
+            <div class="rat-row" data-cat="clean">
+              <div class="rl">
+                <span class="rn">🧹 Cleanliness</span>
+                <div><span class="rv" id="rv-clean" style="color:var(--mute)">—</span><span class="rd" id="rd-clean">Tap to rate</span></div>
+              </div>
+              <div class="rat-btns" id="rb-clean">
+                <button class="rb" data-n="1">1</button><button class="rb" data-n="2">2</button><button class="rb" data-n="3">3</button><button class="rb" data-n="4">4</button><button class="rb" data-n="5">5</button><button class="rb" data-n="6">6</button><button class="rb" data-n="7">7</button><button class="rb" data-n="8">8</button><button class="rb" data-n="9">9</button><button class="rb" data-n="10">10</button>
+              </div>
+            </div>
+
+            <div class="rat-row" data-cat="wait">
+              <div class="rl">
+                <span class="rn">⏱ Wait Time</span>
+                <div><span class="rv" id="rv-wait" style="color:var(--mute)">—</span><span class="rd" id="rd-wait">Tap to rate</span></div>
+              </div>
+              <div class="rat-btns" id="rb-wait">
+                <button class="rb" data-n="1">1</button><button class="rb" data-n="2">2</button><button class="rb" data-n="3">3</button><button class="rb" data-n="4">4</button><button class="rb" data-n="5">5</button><button class="rb" data-n="6">6</button><button class="rb" data-n="7">7</button><button class="rb" data-n="8">8</button><button class="rb" data-n="9">9</button><button class="rb" data-n="10">10</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live computed score -->
+          <div class="comp-score">
+            <div class="cn" id="cs-num" style="color:var(--mute)">—</div>
+            <div class="ci" style="flex:1">
+              <b id="cs-lbl">Rate all 6 categories</b>
+              <p id="cs-sub">Your overall score appears here</p>
+              <div class="cb"><div class="cbf" id="cs-bar" style="width:0%"></div></div>
+            </div>
+          </div>
+
+          <!-- Visit type -->
+          <div class="wfield">
+            <label>Visit type</label>
+            <div class="vchips">
+              <button class="vc active">🍴 Couple</button>
+              <button class="vc">👨‍👩‍👧 Family</button>
+              <button class="vc">💼 Business</button>
+              <button class="vc">🧍 Solo</button>
+              <button class="vc">🎉 Occasion</button>
+            </div>
+          </div>
+
+          <!-- What did you order -->
+          <div class="wfield">
+            <label>What did you order?</label>
+            <input type="text" placeholder="e.g. Chicken BBQ Platter, Beef Steak…">
+          </div>
+
+          <!-- Review text -->
+          <div class="wfield">
+            <label>Your review</label>
+            <textarea placeholder="Tell other diners about the food, the service, and your overall experience…"></textarea>
+          </div>
+
+          <!-- Recommend toggle -->
+          <div class="rec-row">
+            <div class="rrl">Would you recommend Fusion Grill?</div>
+            <div class="rec-btns">
+              <button class="recb y active" id="rec-y">👍 Yes</button>
+              <button class="recb n" id="rec-n">👎 No</button>
+            </div>
+          </div>
+
+          <button class="submit-btn" id="submit-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:17px;height:17px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+            Submit My Review
+          </button>
+        </div>
+
+        <!-- RESTAURANT DETAILS -->
+        <div class="det-card">
+          <h3>Restaurant Details</h3>
+          <div class="det-list">
+            <div class="det-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 3v7a3 3 0 0 0 6 0V3M7 10v11M17 3c-2 0-3 2-3 5s1 4 3 4v9"/></svg><span><strong>Cuisine:</strong> African, BBQ &amp; Grill</span></div>
+            <div class="det-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span><strong>Price:</strong> MWK 3,000 – 12,000 per person</span></div>
+            <div class="det-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span><strong>Today:</strong> 11:00 AM – 10:00 PM</span></div>
+            <div class="det-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg><span>Independence Drive, Area 47, Lilongwe</span></div>
+            <div class="det-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 2 4.1 2 2 0 0 1 4 2h3.1"/></svg><a href="tel:+265991234567" style="color:var(--gold)">+265 99 123 4567</a></div>
+          </div>
+          <div class="minimap">
+            <div class="mpin"><svg viewBox="0 0 24 28" fill="currentColor"><path d="M12 0C5 0 0 4 0 11c0 7 12 17 12 17s12-10 12-17C24 4 19 0 12 0z"/></svg></div>
+          </div>
+          <a href="https://maps.google.com/?q=Fusion+Grill+Independence+Drive+Lilongwe+Malawi" target="_blank">
+            <button class="dir-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+              Get Directions in Google Maps
+            </button>
+          </a>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<script>
+const LABELS = ['','Terrible','Poor','Bad','Below Avg','Average','Decent','Good','Great','Excellent','Perfect'];
+const COLORS = ['','var(--red)','var(--red)','var(--red)','var(--red)','var(--orange)','var(--orange)','var(--orange)','var(--gold)','var(--gold)','var(--gold)'];
+const CATS = ['food','service','ambiance','value','clean','wait'];
+const scores = {food:0,service:0,ambiance:0,value:0,clean:0,wait:0};
+
+function getBtnCls(n) {
+  if (n >= 8) return 'sh';
+  if (n >= 5) return 'sm';
+  return 'sl';
+}
+
+function paintBtns(cat, highlight, commit) {
+  document.querySelectorAll(`#rb-${cat} .rb`).forEach(b => {
+    const bn = parseInt(b.dataset.n, 10);
+    b.className = 'rb';
+    if (highlight > 0) {
+      if (bn <= highlight) b.classList.add(getBtnCls(highlight));
+      else b.classList.add('dim');
+    } else if (commit > 0) {
+      if (bn <= commit) b.classList.add(getBtnCls(commit));
+      else b.classList.add('dim');
+    }
+  });
+}
+
+function setLabel(cat, n) {
+  const v = document.getElementById('rv-' + cat);
+  const d = document.getElementById('rd-' + cat);
+  if (n > 0) {
+    v.textContent = n;
+    v.style.color = COLORS[n];
+    d.textContent = LABELS[n];
+  } else {
+    v.textContent = '—';
+    v.style.color = 'var(--mute)';
+    d.textContent = 'Tap to rate';
+  }
+}
+
+function updateOverall() {
+  const rated = CATS.filter(c => scores[c] > 0);
+  const numEl = document.getElementById('cs-num');
+  const lblEl = document.getElementById('cs-lbl');
+  const subEl = document.getElementById('cs-sub');
+  const barEl = document.getElementById('cs-bar');
+  if (rated.length === 0) {
+    numEl.textContent = '—';
+    numEl.style.color = 'var(--mute)';
+    lblEl.textContent = 'Rate all 6 categories';
+    subEl.textContent = 'Your overall score appears here';
+    barEl.style.width = '0%';
+    return;
+  }
+  const avg = (rated.reduce((s, c) => s + scores[c], 0) / rated.length).toFixed(1);
+  const remaining = CATS.length - rated.length;
+  numEl.textContent = avg;
+  numEl.style.color = avg >= 8 ? 'var(--gold)' : avg >= 5 ? 'var(--orange)' : 'var(--red)';
+  lblEl.textContent = LABELS[Math.round(avg)];
+  subEl.textContent = remaining > 0 ? `${remaining} categor${remaining > 1 ? 'ies' : 'y'} left` : 'All categories rated';
+  barEl.style.width = (avg / 10 * 100) + '%';
+}
+
+CATS.forEach(cat => {
+  const btns = document.querySelectorAll(`#rb-${cat} .rb`);
+  btns.forEach(btn => {
+    btn.addEventListener('mouseenter', function() {
+      paintBtns(cat, parseInt(this.dataset.n, 10), scores[cat]);
+      document.getElementById('rd-' + cat).textContent = LABELS[parseInt(this.dataset.n, 10)];
+    });
+    btn.addEventListener('mouseleave', function() {
+      paintBtns(cat, 0, scores[cat]);
+      setLabel(cat, scores[cat]);
+    });
+    btn.addEventListener('click', function() {
+      scores[cat] = parseInt(this.dataset.n, 10);
+      paintBtns(cat, 0, scores[cat]);
+      setLabel(cat, scores[cat]);
+      updateOverall();
+    });
+  });
+});
+
+// Filter tabs
+document.querySelectorAll('.ftab').forEach(b => b.addEventListener('click', function() {
+  document.querySelectorAll('.ftab').forEach(x => x.classList.remove('active'));
+  this.classList.add('active');
+}));
+
+// Helpful buttons
+document.querySelectorAll('.helpful-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const el = this.querySelector('.hcount');
+    const cur = parseInt(el.textContent, 10);
+    if (this.classList.contains('liked')) {
+      this.classList.remove('liked');
+      el.textContent = cur - 1;
+    } else {
+      this.classList.add('liked');
+      el.textContent = cur + 1;
+    }
+  });
+});
+
+// Visit type chips
+document.querySelectorAll('.vc').forEach(b => b.addEventListener('click', function() {
+  document.querySelectorAll('.vc').forEach(x => x.classList.remove('active'));
+  this.classList.add('active');
+}));
+
+// Recommend toggle
+document.getElementById('rec-y').addEventListener('click', function() {
+  this.classList.add('active');
+  document.getElementById('rec-n').classList.remove('active');
+});
+document.getElementById('rec-n').addEventListener('click', function() {
+  this.classList.add('active');
+  document.getElementById('rec-y').classList.remove('active');
+});
+
+// Load more
+document.getElementById('load-more').addEventListener('click', function() {
+  this.textContent = 'All 436 reviews loaded';
+  this.disabled = true;
+  this.style.opacity = '.45';
+  this.style.cursor = 'default';
+});
+
+// Submit
+document.getElementById('submit-btn').addEventListener('click', function() {
+  const missing = CATS.filter(c => scores[c] === 0);
+  if (missing.length > 0) {
+    const orig = this.innerHTML;
+    this.style.background = 'var(--red)';
+    this.textContent = `⚠ Please rate all 6 categories (${missing.length} left)`;
+    setTimeout(() => { this.style.background = ''; this.innerHTML = orig; }, 2800);
+    return;
+  }
+  this.style.background = 'var(--green)';
+  this.innerHTML = '✓ Review submitted — thank you!';
+  this.disabled = true;
+});
+</script>
+</body>
+</html>

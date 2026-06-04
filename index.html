@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dining Experience Platform · Page Index</title>
+<style>
+:root{
+  --bg:#0c0c0e; --surface:#17171b; --surface-2:#1f1f24; --border:#27272e; --border-soft:#1e1e23;
+  --gold:#e6a93c; --gold-bright:#f3bd55; --gold-dark:#c9922e;
+  --text:#f4f1ea; --dim:#9a958c; --mute:#6f6a62;
+  --green:#5bbd72;
+  --font:'Segoe UI',Candara,'Helvetica Neue',system-ui,-apple-system,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:
+   radial-gradient(circle at 80% -10%,rgba(230,169,60,.10),transparent 45%),
+   radial-gradient(circle at 0% 100%,rgba(230,169,60,.05),transparent 40%),
+   var(--bg);
+  color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:inherit;text-decoration:none}
+.shell{max-width:1080px;margin:0 auto;padding:46px 28px 70px}
+header.top{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+.logo{width:54px;height:54px;border-radius:14px;background:linear-gradient(150deg,var(--gold-bright),var(--gold-dark));display:grid;place-items:center;flex-shrink:0}
+.logo svg{width:30px;height:30px}
+header.top .name{font-size:22px;font-weight:800;line-height:1.1}
+header.top .name span{display:block;font-size:15px;font-weight:600;color:var(--dim)}
+.intro{margin:26px 0 34px;max-width:680px}
+.intro h1{font-size:40px;font-weight:800;letter-spacing:-1px;line-height:1.08}
+.intro h1 em{color:var(--gold);font-style:normal}
+.intro p{color:var(--dim);font-size:16px;line-height:1.6;margin-top:14px}
+.tag{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);background:var(--surface);
+  color:var(--gold);font-size:13px;padding:6px 14px;border-radius:20px;margin-bottom:6px}
+.tag i{width:7px;height:7px;border-radius:50%;background:var(--green)}
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;
+  display:flex;flex-direction:column;transition:.18s;position:relative}
+.tile:hover{transform:translateY(-5px);border-color:var(--gold)}
+.tile:hover .preview .label{color:var(--gold)}
+.preview{height:118px;position:relative;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border-soft)}
+.preview .num{position:absolute;top:12px;left:14px;font-size:12px;font-weight:700;color:var(--mute)}
+.preview .pd{position:absolute;top:12px;right:14px;font-size:11px;color:var(--dim);border:1px solid var(--border);padding:3px 9px;border-radius:20px}
+.preview .ico{color:var(--gold);opacity:.9}
+.preview .ico svg{width:42px;height:42px}
+.p-home{background:radial-gradient(circle at 70% 40%,rgba(200,120,40,.28),transparent 60%),#161015}
+.p-explore{background:radial-gradient(circle at 50% 50%,rgba(91,141,120,.22),transparent 60%),#101814}
+.p-discover{background:radial-gradient(circle at 60% 50%,rgba(155,107,214,.20),transparent 60%),#141019}
+.p-restaurant{background:radial-gradient(circle at 70% 45%,rgba(184,112,42,.28),transparent 60%),#171015}
+.p-reviews{background:radial-gradient(circle at 50% 40%,rgba(230,169,60,.22),transparent 60%),#15130c}
+.p-profile{background:radial-gradient(circle at 50% 40%,rgba(120,100,70,.26),transparent 60%),#15120e}
+.body{padding:16px 17px 18px;flex:1;display:flex;flex-direction:column}
+.body h3{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px}
+.body .file{font-size:12px;color:var(--gold);font-family:'Consolas',monospace;margin:4px 0 9px}
+.body p{color:var(--dim);font-size:13.5px;line-height:1.55;flex:1}
+.body .open{margin-top:14px;display:flex;align-items:center;gap:7px;color:var(--text);font-size:13.5px;font-weight:600}
+.body .open svg{width:15px;height:15px;color:var(--gold);transition:.18s}
+.tile:hover .body .open svg{transform:translateX(4px)}
+.note{margin-top:30px;display:flex;align-items:flex-start;gap:12px;background:var(--surface);border:1px solid var(--border-soft);border-radius:12px;padding:16px 18px;color:var(--dim);font-size:13.5px;line-height:1.55}
+.note .ni{color:var(--gold);flex-shrink:0;font-size:17px}
+footer{margin-top:30px;color:var(--mute);font-size:12.5px;text-align:center}
+@media(max-width:880px){.grid{grid-template-columns:repeat(2,1fr)}.intro h1{font-size:32px}}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="top">
+    <span class="logo"><svg viewBox="0 0 24 24" fill="#1a1205"><path d="M6 2c-.5 0-1 .4-1 1v6c0 1 .5 1.7 1.3 2L6 22h2l.7-11C9.5 10.7 10 10 10 9V3c0-.6-.4-1-1-1s-1 .4-1 1v4H7V3c0-.6-.4-1-1-1zm12 0c-1.7 0-3 2-3 5 0 2 .8 3.4 2 3.8L18.3 22H20l-1-11.2c1.2-.4 2-1.8 2-3.8 0-3-1.3-5-3-5z"/></svg></span>
+    <div class="name">Dining Experience Platform<span>UI Prototype · 6 pages</span></div>
+  </header>
+
+  <div class="intro">
+    <span class="tag"><i></i> All pages render offline · no internet required</span>
+    <h1>A restaurant &amp; dining discovery platform, <em>built page by page.</em></h1>
+    <p>Each tile below opens a standalone, faithfully reconstructed page from the mockups. Every page shares the same navigation, so you can move between them freely. Pick any starting point.</p>
+  </div>
+
+  <div class="grid">
+    <a class="tile" href="home.html">
+      <div class="preview p-home"><span class="num">01</span><span class="pd">Desktop</span><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8M5 9v11h14V9"/></svg></span></div>
+      <div class="body"><h3>Restaurant Homepage</h3><div class="file">home.html</div><p>The landing experience — hero search, category cards, Most Popular and Top Rated grids, and loyalty promos.</p><span class="open">Open page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+    </a>
+
+    <a class="tile" href="explore.html">
+      <div class="preview p-explore"><span class="num">02</span><span class="pd">Desktop</span><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span></div>
+      <div class="body"><h3>Explore Restaurants</h3><div class="file">explore.html</div><p>An interactive map with location pins, filter chips, and a ranked restaurant list with ratings and distances.</p><span class="open">Open page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+    </a>
+
+    <a class="tile" href="discover.html">
+      <div class="preview p-discover"><span class="num">03</span><span class="pd">Mobile</span><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M10 18h4"/></svg></span></div>
+      <div class="body"><h3>Discover</h3><div class="file">discover.html</div><p>The mobile view with a Restaurants / Bars / Other / Events toggle, dining specials, live events, and quick actions.</p><span class="open">Open page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+    </a>
+
+    <a class="tile" href="restaurant.html">
+      <div class="preview p-restaurant"><span class="num">04</span><span class="pd">Desktop</span><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 3v7a3 3 0 0 0 6 0V3M7 10v11M17 3c-2 0-3 2-3 5s1 4 3 4v9"/></svg></span></div>
+      <div class="body"><h3>Restaurant Dashboard</h3><div class="file">restaurant.html</div><p>A single restaurant page — Fusion Grill — with menu tabs, dish cards, today's offers, info, map and loyalty.</p><span class="open">Open page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+    </a>
+
+    <a class="tile" href="reviews.html">
+      <div class="preview p-reviews"><span class="num">05</span><span class="pd">Desktop</span><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l2.5 5 5.5.8-4 3.9 1 5.5L12 16l-5 2.6 1-5.5-4-3.9 5.5-.8z"/></svg></span></div>
+      <div class="body"><h3>Reviews &amp; Ratings</h3><div class="file">reviews.html</div><p>The rating breakdown with distribution bars, filter tabs, individual reviews, and a leave-a-review panel.</p><span class="open">Open page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+    </a>
+
+    <a class="tile" href="profile.html">
+      <div class="preview p-profile"><span class="num">06</span><span class="pd">Desktop</span><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span></div>
+      <div class="body"><h3>Profile</h3><div class="file">profile.html</div><p>The account view — personal info, payment methods, points &amp; loyalty progress, favorites and recent orders.</p><span class="open">Open page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+    </a>
+  </div>
+
+  <div class="note">
+    <span class="ni">✦</span>
+    <div>Bar Homepage and Events are reserved for when you add their mockups — drop a new tile in here and a matching <code style="color:var(--gold)">bar.html</code> / <code style="color:var(--gold)">events.html</code> alongside the others. Keep every file in the same folder so the shared navigation links keep working.</div>
+  </div>
+
+  <footer>Dining Experience Platform · static HTML/CSS prototype · placeholder imagery rendered with CSS &amp; SVG</footer>
+</div>
+</body>
+</html>
