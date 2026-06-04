@@ -792,11 +792,45 @@ CATS.forEach(cat => {
   });
 });
 
-// Filter tabs
+// Filter tabs — actually show/hide review cards
+const revCards = [...document.querySelectorAll('.rev-card')];
+
+function applyRevFilter() {
+  const label = document.querySelector('.ftab.active')?.textContent.trim() || 'All';
+  revCards.forEach(card => {
+    let show = true;
+    if (label === '5 Stars')     show = card.querySelector('.score-box.sh') !== null;
+    if (label === 'With Photos') show = card.querySelector('.rev-photos') !== null;
+    card.style.display = show ? '' : 'none';
+  });
+  // update count
+  const vis = revCards.filter(c => c.style.display !== 'none').length;
+  document.querySelector('.rev-toolbar .rc').innerHTML =
+    vis + ' Reviews <span>· Fusion Grill</span>';
+}
+
 document.querySelectorAll('.ftab').forEach(b => b.addEventListener('click', function() {
   document.querySelectorAll('.ftab').forEach(x => x.classList.remove('active'));
   this.classList.add('active');
+  applyRevFilter();
 }));
+
+// Sort select — reorder review cards in DOM
+document.querySelector('.sort-sel').addEventListener('change', function() {
+  const list = document.querySelector('.rev-list');
+  const cards = [...list.querySelectorAll('.rev-card')];
+  const val = this.value;
+  if (val === 'Most Helpful') {
+    cards.sort((a, b) => (+b.querySelector('.hcount')?.textContent || 0) - (+a.querySelector('.hcount')?.textContent || 0));
+  } else if (val === 'Highest Score') {
+    cards.sort((a, b) => (+b.querySelector('.sb')?.textContent || 0) - (+a.querySelector('.sb')?.textContent || 0));
+  } else if (val === 'Lowest Score') {
+    cards.sort((a, b) => (+a.querySelector('.sb')?.textContent || 0) - (+b.querySelector('.sb')?.textContent || 0));
+  } else {
+    revCards.forEach(c => list.appendChild(c)); return;
+  }
+  cards.forEach(c => list.appendChild(c));
+});
 
 // Helpful buttons
 document.querySelectorAll('.helpful-btn').forEach(btn => {
