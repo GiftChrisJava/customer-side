@@ -207,6 +207,57 @@
             gap: 20px;
         }
 
+        .context-pills-row {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+            padding: 16px 26px;
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+            background: #07080b;
+        }
+
+        .context-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            background: #0f1117;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 11px 16px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all .2s;
+        }
+
+        .context-pill i {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .context-pill.active,
+        .context-pill:hover {
+            color: var(--text-primary);
+            border-color: #3a3a42;
+        }
+
+        .context-pill.active i,
+        .context-pill:hover i {
+            color: var(--text-primary);
+        }
+
+        .context-pill.get-in {
+            border-color: rgba(230,169,60,.12);
+            background: rgba(230,169,60,.10);
+            color: #fff7e4;
+        }
+
+        .context-pill.get-in i {
+            color: #fff7e4;
+        }
+
         .notification-bell {
             position: relative;
             cursor: pointer;
@@ -486,6 +537,19 @@
         .category-item span {
             font-size: 12px;
             color: var(--text-secondary);
+        }
+
+        .venue-card-link {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .venue-card-link .venue-entry {
+            margin-top: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-gold);
+            letter-spacing: 0.2px;
         }
 
         /* --- CONTENT SECTIONS --- */
@@ -914,6 +978,8 @@
             
             .app-container { margin-left: 0; padding-bottom: 70px; }
             .top-navbar .nav-links { display: none; } /* Kept clean layout inside top nav */
+            .context-pills-row { padding: 12px 12px; gap: 12px; }
+            .context-pill { font-size: 12px; padding: 10px 14px; }
             
             .dropdown-filters { grid-template-columns: repeat(2, 1fr); }
             .happening-grid { grid-template-columns: 1fr; }
@@ -975,6 +1041,13 @@
                 </div>
             </div>
         </nav>
+
+        <div class="context-pills-row">
+            <a href="restaurant.html" class="context-pill"><i class="fa-solid fa-utensils"></i> Restaurants</a>
+            <a href="bars.html" class="context-pill"><i class="fa-solid fa-martini-glass-citrus"></i> Bars</a>
+            <!-- <a href="#" class="context-pill"><i class="fa-solid fa-bowl-food"></i> Other</a> -->
+            <a href="events.html" class="context-pill active get-in"><i class="fa-solid fa-calendar-days"></i> Events</a>
+        </div>
 
         <main class="main-content">
             
@@ -1151,13 +1224,14 @@
                             <div class="venue-count">128 Events</div>
                         </div>
                     </div>
-                    <div class="venue-card" style="background-image: url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&q=80&w=200');">
+                    <a href="bars.html" class="venue-card venue-card-link" style="background-image: url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&q=80&w=200');">
                         <div class="venue-info">
                             <div class="venue-icon-tag"><i class="fa-solid fa-champagne-glasses"></i></div>
                             <div class="venue-name">Bar Events</div>
                             <div class="venue-count">167 Events</div>
+                            <div class="venue-entry">Get In <i class="fa-solid fa-arrow-right"></i></div>
                         </div>
-                    </div>
+                    </a>
                     <div class="venue-card" style="background-image: url('https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&q=80&w=200');">
                         <div class="venue-info">
                             <div class="venue-icon-tag"><i class="fa-solid fa-cloud-moon"></i></div>
