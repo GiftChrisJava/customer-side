@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dining Experience Platform - Events Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #0b0b0c;
+            --bg-sidebar: #050505;
+            --bg-card: #121214;
+            --bg-input: #1a1a1e;
+            --text-primary: #ffffff;
+            --text-secondary: #9a9a9a;
+            --accent-gold: #e5a93c;
+            --accent-gold-hover: #cc922b;
+            --tag-live: #22c55e;
+            --tag-live-bg: rgba(34, 197, 94, 0.15);
+            --border-color: #26262b;
+            --sidebar-width: 74px;
+            /* Mappings to reuse the shared rail/sidebar styles from other pages */
+            --rail-w: var(--sidebar-width);
+            --bg: var(--bg-dark);
+            --surface: var(--bg-card);
+            --surface-2: #1f1f24;
+            --border-soft: var(--border-color);
+            --border: var(--border-color);
+            --gold: var(--accent-gold);
+            --gold-bright: var(--accent-gold-hover);
+            --text: var(--text-primary);
+            --dim: var(--text-secondary);
+            --mute: var(--text-secondary);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.5;
+            display: flex; /* layout rail + app horizontally */
+            flex-direction: row;
+            min-height: 100vh;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        .rail{width:var(--rail-w);background:var(--bg);border-right:1px solid var(--border-soft);display:flex;flex-direction:column;align-items:center;padding:18px 0;position:sticky;top:0;height:100vh;gap:6px;flex-shrink:0}
+.rail a{display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--mute);width:56px;padding:9px 0;border-radius:12px;font-size:10px;transition:.18s}
+.rail a svg{width:21px;height:21px}
+.rail a:hover{color:var(--text);background:var(--surface)}
+.rail a.active{color:var(--gold);background:rgba(230,169,60,.12)}
+.rail .spacer{flex:1}
+
+        /* --- SIDEBAR NAVIGATION --- */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 18px 0;
+            z-index: 100;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            list-style: none;
+            width: 100%;
+            align-items: center;
+        }
+
+        .sidebar-item {
+            width: 56px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 9px 0;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-size: 10px;
+            font-weight: 500;
+            gap: 5px;
+            transition: all 0.18s ease;
+            text-align: center;
+        }
+
+        .sidebar-item i {
+            font-size: 21px;
+        }
+
+        .sidebar-item.active {
+            background-color: rgba(229, 169, 60, 0.1);
+            color: var(--accent-gold);
+        }
+
+        .sidebar-item:hover:not(.active) {
+            color: var(--text-primary);
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .sidebar-help {
+            margin-top: auto;
+        }
+
+        /* --- APP WRAPPER (MAIN LAYOUT PUSH) --- */
+        .app-container {
+            margin-left: 0; /* let the rail occupy the left column */
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- TOP HEADER NAVBAR --- */
+        .top-navbar {
+            background-color: #050505;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 40px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            background-color: var(--accent-gold);
+            color: #000;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .brand-text h1 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .brand-text p {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--accent-gold);
+        }
+
+        .nav-links a.active {
+            position: relative;
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--accent-gold);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .context-pills-row {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+            padding: 16px 26px;
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+            background: #07080b;
+        }
+
+        .context-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            background: #0f1117;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 11px 16px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all .2s;
+        }
+
+        .context-pill i {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .context-pill.active,
+        .context-pill:hover {
+            color: var(--text-primary);
+            border-color: #3a3a42;
+        }
+
+        .context-pill.active i,
+        .context-pill:hover i {
+            color: var(--text-primary);
+        }
+
+        .context-pill.get-in {
+            border-color: rgba(230,169,60,.12);
+            background: rgba(230,169,60,.10);
+            color: #fff7e4;
+        }
+
+        .context-pill.get-in i {
+            color: #fff7e4;
+        }
+
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 18px;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background-color: var(--accent-gold);
+            color: #000;
+            font-size: 9px;
+            font-weight: 700;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid var(--border-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .profile-img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: #3e3225;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-gold);
+            font-size: 12px;
+        }
+
+        .user-info .user-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .user-info .user-status {
+            font-size: 10px;
+            color: var(--accent-gold);
+        }
+
+        /* --- DASHBOARD CONTENT PANELS --- */
+        .main-content {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 30px 20px;
+            flex: 1;
+        }
+
+        /* --- HERO CSS CAROUSEL --- */
+        .hero-carousel {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            overflow: hidden;
+            border-radius: 16px;
+            margin-bottom: 35px;
+        }
+
+        .carousel-track {
+            display: flex;
+            width: 400%;
+            height: 100%;
+            animation: sliderTransitions 20s infinite ease-in-out;
+        }
+
+        .carousel-slide {
+            width: 25%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            padding: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .carousel-slide::before {
+            content: '';
+            position: absolute;
+            top:0; left:0; width:100%; height:100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.9) 35%, rgba(0,0,0,0.1));
+        }
+
+        .slide-1 { background-image: url('https://images.unsplash.com/photo-1511192336575-5a79af67a629?auto=format&fit=crop&q=80&w=1200'); }
+        .slide-2 { background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=1200'); }
+        .slide-3 { background-image: url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=1200'); }
+        .slide-4 { background-image: url('https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=1200'); }
+
+        .hero-text {
+            position: relative;
+            z-index: 5;
+            max-width: 550px;
+        }
+
+        .hero-text h2 {
+            font-size: 32px;
+            font-weight: 400;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            line-height: 1.2;
+        }
+
+        .hero-text h2 span {
+            color: var(--accent-gold);
+            font-weight: 700;
+        }
+
+        .hero-text p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .btn-gold {
+            background-color: var(--accent-gold);
+            color: #000;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-gold:hover {
+            background-color: var(--accent-gold-hover);
+        }
+
+        /* Pure CSS Indicators matching design dots */
+        .carousel-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            animation: dotTransitions 20s infinite ease-in-out;
+        }
+
+        .dot:nth-child(2) { animation-delay: 5s; }
+        .dot:nth-child(3) { animation-delay: 10s; }
+        .dot:nth-child(4) { animation-delay: 15s; }
+
+        @keyframes sliderTransitions {
+            0%, 20% { transform: translateX(0%); }
+            25%, 45% { transform: translateX(-25%); }
+            50%, 70% { transform: translateX(-50%); }
+            75%, 95% { transform: translateX(-75%); }
+        }
+
+        @keyframes dotTransitions {
+            0%, 20% { background: var(--accent-gold); transform: scale(1.2); }
+            21%, 100% { background: rgba(255,255,255,0.3); transform: scale(1); }
+        }
+
+        /* --- FILTERS & CATEGORIES --- */
+        .search-filter-section {
+            margin-bottom: 35px;
+        }
+
+        .search-wrapper {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .search-bar-container {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-bar-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .search-input {
+            width: 100%;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            padding: 12px 12px 12px 45px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .btn-filter-toggle {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 0 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .dropdown-filters {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        .select-filter {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .categories-scroll {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 15px;
+            margin-bottom: 40px;
+        }
+
+        .category-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            min-width: 80px;
+            cursor: pointer;
+        }
+
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .category-item span {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .venue-card-link {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .venue-card-link .venue-entry {
+            margin-top: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-gold);
+            letter-spacing: 0.2px;
+        }
+
+        /* --- CONTENT SECTIONS --- */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .view-all {
+            color: var(--accent-gold);
+            font-size: 13px;
+        }
+
+        /* --- HAPPENING NOW (GRID) --- */
+        .happening-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .live-card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-img-wrapper {
+            position: relative;
+            height: 150px;
+        }
+
+        .card-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .tag-top-left {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .bookmark-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.6);
+            border: none;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .card-venue, .card-location {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .card-location {
+            margin-bottom: 12px;
+        }
+
+        .card-footer-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+            font-size: 12px;
+        }
+
+        .status-live {
+            color: var(--tag-live);
+            background-color: var(--tag-live-bg);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* --- TONIGHT'S TOP EVENTS --- */
+        .tonight-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .list-row {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+        }
+
+        .row-time {
+            width: 80px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .row-img {
+            width: 100px;
+            height: 60px;
+            border-radius: 6px;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+
+        .row-details {
+            flex: 1;
+        }
+
+        .row-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .row-location {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .row-tags {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .badge-tag {
+            background-color: #1a1a1e;
+            color: var(--text-secondary);
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .row-date-box {
+            text-align: center;
+            margin-right: 25px;
+        }
+
+        .day-label {
+            font-size: 10px;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .date-num {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .month-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .row-bookmark {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .btn-view-all-wide {
+            width: 100%;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--accent-gold);
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 50px;
+        }
+
+        /* --- EXPLORE BY VENUE TYPE (FULL WIDTH DESKTOP STRIP) --- */
+        .venue-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* Spans complete layout width */
+            gap: 15px;
+            margin-bottom: 50px;
+            width: 100%;
+        }
+
+        .venue-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            height: 150px;
+            position: relative;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .venue-card::before {
+            content: '';
+            position: absolute;
+            top:0; left:0; width:100%; height:100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 30%, rgba(0,0,0,0.1));
+            z-index: 1;
+        }
+
+        .venue-info {
+            position: relative;
+            z-index: 2;
+        }
+
+        .venue-icon-tag {
+            color: var(--accent-gold);
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .venue-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .venue-count {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* --- HOST BANNER ACCORDING TO DESIGN 1 --- */
+        .host-banner {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .host-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .host-icon {
+            font-size: 26px;
+            color: var(--accent-gold);
+        }
+
+        .host-text h4 { font-size: 16px; font-weight: 600; }
+        .host-text p { font-size: 13px; color: var(--text-secondary); }
+
+        /* --- COMPREHENSIVE PLATFORM FOOTER ACCORDING TO DESIGN 3 --- */
+        .platform-footer {
+            background-color: #050505;
+            border-top: 1px solid var(--border-color);
+            padding: 50px 40px 30px 40px;
+            width: 100%;
+        }
+
+        .footer-top-grid {
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr);
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto 40px auto;
+        }
+
+        .footer-brand-panel .brand-block {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .footer-brand-panel .brand-logo {
+            background-color: var(--accent-gold);
+            color: #000;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .footer-brand-panel h3 {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .footer-brand-panel p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            max-width: 300px;
+            line-height: 1.6;
+        }
+
+        .footer-links-column h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-transform: capitalize;
+        }
+
+        .footer-links-column ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-links-column ul a {
+            color: var(--text-secondary);
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+
+        .footer-links-column ul a:hover {
+            color: var(--accent-gold);
+        }
+
+        .footer-bottom-bar {
+            max-width: 1200px;
+            margin: 0 auto;
+            border-top: 1px solid var(--border-color);
+            padding-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-bottom-bar p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-icon {
+            background-color: #121214;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .social-icon:hover {
+            background-color: var(--accent-gold);
+            color: #000;
+            border-color: var(--accent-gold);
+        }
+
+        /* --- RESPONSIVE MEDIA QUERIES --- */
+        @media (max-width: 1024px) {
+            .happening-grid { grid-template-columns: repeat(2, 1fr); }
+            .venue-grid { grid-template-columns: repeat(3, 1fr); }
+            .footer-top-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                bottom: 0; top: auto; left: 0;
+                width: 100vw; height: 65px;
+                flex-direction: row; padding: 0;
+                justify-content: space-around;
+            }
+            .sidebar-menu { flex-direction: row; justify-content: space-around; }
+            .sidebar-item { padding: 5px 0; gap: 4px; font-size: 10px; }
+            .sidebar-item i { font-size: 16px; }
+            .sidebar-help { display: none; }
+            
+            .app-container { margin-left: 0; padding-bottom: 70px; }
+            .top-navbar .nav-links { display: none; } /* Kept clean layout inside top nav */
+            .context-pills-row { padding: 12px 12px; gap: 12px; }
+            .context-pill { font-size: 12px; padding: 10px 14px; }
+            
+            .dropdown-filters { grid-template-columns: repeat(2, 1fr); }
+            .happening-grid { grid-template-columns: 1fr; }
+            .venue-grid { grid-template-columns: repeat(2, 1fr); }
+            .list-row { flex-wrap: wrap; gap: 10px; }
+            .row-date-box { margin-left: auto; margin-right: 10px; }
+            .host-banner { flex-direction: column; gap: 15px; text-align: center; }
+            .footer-top-grid { grid-template-columns: 1fr; }
+            .footer-bottom-bar { flex-direction: column; gap: 15px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+<aside>
+    <nav class="rail" aria-label="Quick navigation">
+        <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8M5 9v11h14V9"/></svg>Home</a>
+        <a href="explore.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Explore</a>
+        <a href="discover.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="m15 9-4 1-1 4 4-1z"/></svg>Discover</a>
+        <a href="events.html" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><path d="M9 11h6"/></svg>Events</a>
+        <a href="restaurant.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 3v7a3 3 0 0 0 6 0V3M7 10v11M17 3c-2 0-3 2-3 5s1 4 3 4v9"/></svg>Menu</a>
+        <a href="reviews.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.5 5 5.5.8-4 3.9 1 5.5L12 16l-5 2.6 1-5.5-4-3.9 5.5-.8z"/></svg>Reviews</a>
+        <a href="profile.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Profile</a>
+        <div class="spacer"></div>
+        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .9-1 1.7M12 17h.01"/></svg>Help</a>
+    </nav>
+</aside>
+    <div class="app-container">
+        
+        <nav class="top-navbar">
+            <div class="nav-brand">
+                <div class="brand-logo"><i class="fa-solid fa-utensils"></i></div>
+                <div class="brand-text">
+                    <h1>Dining Experience</h1>
+                    <p>Platform</p>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="explore.html">Explore</a></li>
+                <li><a href="discover.html">Discover</a></li>
+                <li><a href="events.html" class="active">Events</a></li>
+                <li><a href="restaurant.html">Restaurant</a></li>
+                <li><a href="reviews.html">Reviews</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <div class="notification-bell">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                <div class="user-profile">
+                    <div class="profile-img"><i class="fa-solid fa-user"></i></div>
+                    <div class="user-info">
+                        <div class="user-name">David O'Brien</div>
+                        <div class="user-status">Gold Member</div>
+                    </div>
+                    <i class="fa-solid fa-caret-down" style="font-size: 11px; color: var(--text-secondary)"></i>
+                </div>
+            </div>
+        </nav>
+
+        <div class="context-pills-row">
+            <a href="restaurant.html" class="context-pill"><i class="fa-solid fa-utensils"></i> Restaurants</a>
+            <a href="bars.html" class="context-pill"><i class="fa-solid fa-martini-glass-citrus"></i> Bars</a>
+            <!-- <a href="#" class="context-pill"><i class="fa-solid fa-bowl-food"></i> Other</a> -->
+            <a href="events.html" class="context-pill active get-in"><i class="fa-solid fa-calendar-days"></i> Events</a>
+        </div>
+
+        <main class="main-content">
+            
+            <div class="hero-carousel">
+                <div class="carousel-track">
+                    <div class="carousel-slide slide-1">
+                        <div class="hero-text">
+                            <h2>Discover Unforgettable <span>Events Near You</span></h2>
+                            <p>From live music to sports, DJs to food experiences - find what's happening tonight.</p>
+                            <button class="btn-gold">Explore Events <i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                    <div class="carousel-slide slide-2">
+                        <div class="hero-text">
+                            <h2>Premium Lounge <span>Vibes & Cocktails</span></h2>
+                            <p>Get exclusive early access bookings to top tier visual nightlife events near Lilongwe.</p>
+                            <button class="btn-gold">Explore Live DJs <i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                    <div class="carousel-slide slide-3">
+                        <div class="hero-text">
+                            <h2>World-class <span>Wine Tasting Duets</span></h2>
+                            <p>Immerse your senses in custom tailored dining courses organized by legacy wine estates.</p>
+                            <button class="btn-gold">Book Experience <i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                    <div class="carousel-slide slide-4">
+                        <div class="hero-text">
+                            <h2>Stand-up Comedy <span>Live Showcases</span></h2>
+                            <p>Prepare for exceptional premium laughter nights hosting nationwide touring acts.</p>
+                            <button class="btn-gold">Get Tickets <i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-dots">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+
+            <section class="search-filter-section">
+                <div class="search-wrapper">
+                    <div class="search-bar-container">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" class="search-input" placeholder="Search events, venues, artists...">
+                    </div>
+                    <button class="btn-filter-toggle"><i class="fa-solid fa-sliders"></i> Filters</button>
+                </div>
+                <div class="dropdown-filters">
+                    <select class="select-filter"><option>Venue Type: All Types</option></select>
+                    <select class="select-filter"><option>Event Type: All Events</option></select>
+                    <select class="select-filter"><option>Date: Today</option></select>
+                    <select class="select-filter"><option>Time: All Time</option></select>
+                    <select class="select-filter"><option>Sort By: Trending</option></select>
+                </div>
+            </section>
+
+            <div class="categories-scroll">
+                <div class="category-item"><div class="category-icon" style="color: #a855f7;"><i class="fa-solid fa-music"></i></div><span>Live Music</span></div>
+                <div class="category-item"><div class="category-icon" style="color: #ec4899;"><i class="fa-solid fa-compact-disc"></i></div><span>DJs</span></div>
+                <div class="category-item"><div class="category-icon" style="color: #22c55e;"><i class="fa-solid fa-futbol"></i></div><span>Sports</span></div>
+                <div class="category-item"><div class="category-icon" style="color: #eab308;"><i class="fa-solid fa-saxophone"></i></div><span>Jazz</span></div>
+                <div class="category-item"><div class="category-icon" style="color: #ef4444;"><i class="fa-solid fa-masks-theater"></i></div><span>Comedy</span></div>
+                <div class="category-item"><div class="category-icon" style="color: #f97316;"><i class="fa-solid fa-bowl-food"></i></div><span>Food Events</span></div>
+                <div class="category-item"><div class="category-icon" style="color: #ec4899;"><i class="fa-solid fa-wine-glass"></i></div><span>Wine & Drinks</span></div>
+                <div class="category-item"><div class="category-icon" style="color: #64748b;"><i class="fa-solid fa-border-all"></i></div><span>All Events</span></div>
+            </div>
+
+            <section>
+                <div class="section-header">
+                    <div class="section-title">Happening Now <span style="color:#ef4444; font-size:12px; display:inline-flex; align-items:center; gap:4px;"><i class="fa-solid fa-circle" style="font-size:7px;"></i> Live</span></div>
+                    <a href="#" class="view-all">View All <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i></a>
+                </div>
+                <div class="happening-grid">
+                    <div class="live-card">
+                        <div class="card-img-wrapper">
+                            <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=300" alt="Music">
+                            <span class="tag-top-left" style="background-color: #a855f7;">Live Music</span>
+                            <button class="bookmark-btn"><i class="fa-regular fa-bookmark"></i></button>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-title">Acoustic Night</div>
+                            <div class="card-venue">The Wine Loft</div>
+                            <div class="card-location"><i class="fa-solid fa-location-dot"></i> Lilongwe</div>
+                            <div class="card-footer-info"><span class="status-live">Live Now</span><span class="attendee-count"><i class="fa-solid fa-user-group"></i> 128</span></div>
+                        </div>
+                    </div>
+                    <div class="live-card">
+                        <div class="card-img-wrapper">
+                            <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=300" alt="Sports">
+                            <span class="tag-top-left" style="background-color: #22c55e;">Sports</span>
+                            <button class="bookmark-btn"><i class="fa-regular fa-bookmark"></i></button>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-title">Man City vs Arsenal</div>
+                            <div class="card-venue">Legends Sports Bar</div>
+                            <div class="card-location"><i class="fa-solid fa-location-dot"></i> Lilongwe</div>
+                            <div class="card-footer-info"><span class="status-live">Live Now</span><span class="attendee-count"><i class="fa-solid fa-user-group"></i> 214</span></div>
+                        </div>
+                    </div>
+                    <div class="live-card">
+                        <div class="card-img-wrapper">
+                            <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=300" alt="DJ">
+                            <span class="tag-top-left" style="background-color: #ec4899;">DJ Set</span>
+                            <button class="bookmark-btn"><i class="fa-regular fa-bookmark"></i></button>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-title">Friday Night Vibes</div>
+                            <div class="card-venue">Skyline Rooftop</div>
+                            <div class="card-location"><i class="fa-solid fa-location-dot"></i> Lilongwe</div>
+                            <div class="card-footer-info"><span class="status-live">Live Now</span><span class="attendee-count"><i class="fa-solid fa-user-group"></i> 186</span></div>
+                        </div>
+                    </div>
+                    <div class="live-card">
+                        <div class="card-img-wrapper">
+                            <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=300" alt="Jazz">
+                            <span class="tag-top-left" style="background-color: #eab308; color: black;">Jazz Night</span>
+                            <button class="bookmark-btn"><i class="fa-regular fa-bookmark"></i></button>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-title">Jazz Dinner Night</div>
+                            <div class="card-venue">La Cucina</div>
+                            <div class="card-location"><i class="fa-solid fa-location-dot"></i> Lilongwe</div>
+                            <div class="card-footer-info"><span class="status-live" style="background-color:rgba(234,179,8,0.15); color:#eab308;">Live Now</span><span class="attendee-count"><i class="fa-solid fa-user-group"></i> 92</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="section-header">
+                    <div class="section-title">Tonight's Top Events &nbsp;<i class="fa-regular fa-calendar-days" style="color: #a855f7; font-size: 15px;"></i></div>
+                    <a href="#" class="view-all">View All <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i></a>
+                </div>
+                <div class="tonight-list">
+                    <div class="list-row">
+                        <div class="row-time">8:00 PM</div>
+                        <img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&q=80&w=200" class="row-img" alt="Party">
+                        <div class="row-details">
+                            <div class="row-title">Rooftop Sunset Party</div>
+                            <div class="row-location"><i class="fa-solid fa-location-dot"></i> Skyline Rooftop</div>
+                            <div class="row-tags"><span class="badge-tag">DJ</span><span class="badge-tag">Cocktails</span><span class="badge-tag">Rooftop</span></div>
+                        </div>
+                        <div class="row-date-box"><div class="day-label">Fri</div><div class="date-num">24</div><div class="month-label">May</div></div>
+                        <button class="row-bookmark"><i class="fa-regular fa-bookmark"></i></button>
+                    </div>
+                    <div class="list-row">
+                        <div class="row-time">7:30 PM</div>
+                        <img src="https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&q=80&w=200" class="row-img" alt="Band">
+                        <div class="row-details">
+                            <div class="row-title">Soul & RnB Live Band</div>
+                            <div class="row-location"><i class="fa-solid fa-location-dot"></i> The Brew House</div>
+                            <div class="row-tags"><span class="badge-tag">Live Music</span><span class="badge-tag">RnB</span><span class="badge-tag">Dinner</span></div>
+                        </div>
+                        <div class="row-date-box"><div class="day-label">Fri</div><div class="date-num">24</div><div class="month-label">May</div></div>
+                        <button class="row-bookmark"><i class="fa-regular fa-bookmark"></i></button>
+                    </div>
+                </div>
+                <button class="btn-view-all-wide"><i class="fa-regular fa-calendar"></i> View All Events <i class="fa-solid fa-chevron-right" style="font-size: 12px;"></i></button>
+            </section>
+
+            <section style="width: 100%;">
+                <div class="section-header">
+                    <div class="section-title">Explore by Venue Type</div>
+                    <a href="#" class="view-all">View All <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i></a>
+                </div>
+                <div class="venue-grid">
+                    <div class="venue-card" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=200');">
+                        <div class="venue-info">
+                            <div class="venue-icon-tag"><i class="fa-solid fa-utensils"></i></div>
+                            <div class="venue-name">Restaurant Events</div>
+                            <div class="venue-count">128 Events</div>
+                        </div>
+                    </div>
+                    <a href="bars.html" class="venue-card venue-card-link" style="background-image: url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&q=80&w=200');">
+                        <div class="venue-info">
+                            <div class="venue-icon-tag"><i class="fa-solid fa-champagne-glasses"></i></div>
+                            <div class="venue-name">Bar Events</div>
+                            <div class="venue-count">167 Events</div>
+                            <div class="venue-entry">Get In <i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+                    </a>
+                    <div class="venue-card" style="background-image: url('https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&q=80&w=200');">
+                        <div class="venue-info">
+                            <div class="venue-icon-tag"><i class="fa-solid fa-cloud-moon"></i></div>
+                            <div class="venue-name">Rooftop Events</div>
+                            <div class="venue-count">86 Events</div>
+                        </div>
+                    </div>
+                    <div class="venue-card" style="background-image: url('https://images.unsplash.com/photo-1560624052-449f5ddf0c31?auto=format&fit=crop&q=80&w=200');">
+                        <div class="venue-info">
+                            <div class="venue-icon-tag"><i class="fa-solid fa-couch"></i></div>
+                            <div class="venue-name">Lounge Events</div>
+                            <div class="venue-count">74 Events</div>
+                        </div>
+                    </div>
+                    <div class="venue-card" style="background-image: url('https://images.unsplash.com/photo-1571945153237-4929e78394a9?auto=format&fit=crop&q=80&w=200');">
+                        <div class="venue-info">
+                            <div class="venue-icon-tag"><i class="fa-solid fa-beer-cardiac"></i></div>
+                            <div class="venue-name">Sports Bars</div>
+                            <div class="venue-count">92 Events</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="host-banner">
+                <div class="host-left">
+                    <div class="host-icon"><i class="fa-regular fa-calendar-plus"></i></div>
+                    <div class="host-text">
+                        <h4>Hosting an Event?</h4>
+                        <p>Promote your event to thousands of people.</p>
+                    </div>
+                </div>
+                <button class="btn-gold" style="border-radius: 6px; padding: 10px 20px;">List Your Event <i class="fa-solid fa-chevron-right"></i></button>
+            </footer>
+
+        </main>
+
+        <footer class="platform-footer">
+            <div class="footer-top-grid">
+                <div class="footer-brand-panel">
+                    <div class="brand-block">
+                        <div class="brand-logo"><i class="fa-solid fa-utensils"></i></div>
+                        <h3>Dining Experience Platform</h3>
+                    </div>
+                    <p>Discover, explore, and enjoy the best restaurants in Lilongwe, Malawi. Read reviews, view menus, and book your next dining experience.</p>
+                </div>
+                <div class="footer-links-column">
+                    <h4>Explore</h4>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Find Restaurants</a></li>
+                        <li><a href="#">Specials & Events</a></li>
+                        <li><a href="#">Reviews</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links-column">
+                    <h4>For Restaurants</h4>
+                    <ul>
+                        <li><a href="#">Partner With Us</a></li>
+                        <li><a href="#">Advertise</a></li>
+                        <li><a href="#">Restaurant Dashboard</a></li>
+                        <li><a href="#">API Access</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links-column">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom-bar">
+                <p>&copy; 2026 Dining Experience Platform. All rights reserved.</p>
+                <div class="footer-socials">
+                    <a href="#" class="social-icon"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+</html>
